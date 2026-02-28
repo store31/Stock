@@ -1,1 +1,58 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حذاء نسائي رياضي - L STORE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
+        .btn-grad { background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); transition: 0.3s; }
+        .product-card { background: white; border-radius: 2rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+    </style>
+</head>
+<body class="text-slate-800 flex items-center justify-center min-h-screen">
+
+    <div class="product-card max-w-md w-full p-4 m-4">
+        <div class="relative">
+            <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=500&q=80" 
+                 class="w-full h-80 object-cover rounded-[1.5rem]" alt="حذاء نسائي">
+            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-4 py-2 rounded-xl font-black text-rose-600 shadow-md">
+                5,800 DA
+            </div>
+        </div>
+        
+        <div class="p-6 text-center">
+            <h1 class="text-2xl font-black text-slate-900 mb-2">حذاء نسائي رياضي Premium</h1>
+            <p class="text-slate-500 text-sm mb-6">أناقة وراحة لا مثيل لها، متوفر بمقاسات مختلفة وألوان جذابة تناسب ذوقك.</p>
+            
+            <button onclick="buyNow()" class="w-full btn-grad text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 shadow-lg shadow-rose-200">
+                <i class="fas fa-shopping-cart"></i> اطلب الآن (شراء)
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+        
+        const chat = createChat({
+            webhookUrl: 'https://uncorrectable-jeane-ungrudged.ngrok-free.dev/webhook/chat', 
+            title: 'L STORE Support 🤖',
+            welcomeMessage: 'مرحباً بك! راني هنا باش نسجلك الطلبية تاعك.',
+            showWelcomeScreen: false,
+        });
+
+        // الوظيفة اللي تبعت الميساج للـ AI
+        window.buyNow = () => {
+            chat.toggle(); // يفتح الشات
+            setTimeout(() => {
+                chat.sendMessage("ORDER_START: حذاء نسائي رياضي");
+            }, 500);
+        };
+    </script>
+</body>
+</html>
