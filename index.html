@@ -1,57 +1,68 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حذاء نسائي رياضي - L STORE</title>
+    <title>ViralNode - تحويل الفيديوهات بذكاء</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
-        .btn-grad { background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); transition: 0.3s; }
-        .product-card { background: white; border-radius: 2rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        body { background: #0f172a; color: white; font-family: sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
-<body class="text-slate-800 flex items-center justify-center min-h-screen">
-
-    <div class="product-card max-w-md w-full p-4 m-4">
-        <div class="relative">
-            <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=500&q=80" 
-                 class="w-full h-80 object-cover rounded-[1.5rem]" alt="حذاء نسائي">
-            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-4 py-2 rounded-xl font-black text-rose-600 shadow-md">
-                5,800 DA
-            </div>
-        </div>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="glass p-8 rounded-2xl shadow-2xl w-full max-auto max-w-md">
+        <h1 class="text-3xl font-bold text-center mb-6 text-blue-400">ViralNode 🚀</h1>
+        <p class="text-gray-400 text-center mb-8">حط رابط اليوتيوب وخلّي الذكاء الاصطناعي يخدم خدمته.</p>
         
-        <div class="p-6 text-center">
-            <h1 class="text-2xl font-black text-slate-900 mb-2">حذاء نسائي رياضي Premium</h1>
-            <p class="text-slate-500 text-sm mb-6">أناقة وراحة لا مثيل لها، متوفر بمقاسات مختلفة وألوان جذابة تناسب ذوقك.</p>
-            
-            <button onclick="buyNow()" class="w-full btn-grad text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 shadow-lg shadow-rose-200">
-                <i class="fas fa-shopping-cart"></i> اطلب الآن (شراء)
-            </button>
-        </div>
+        <form id="viralForm" class="space-y-4">
+            <div>
+                <label class="block text-sm mb-1">رابط YouTube</label>
+                <input type="url" id="yt_url" placeholder="https://youtube.com/..." class="w-full p-3 rounded bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none" required>
+            </div>
+            <div>
+                <label class="block text-sm mb-1">البريد الإلكتروني</label>
+                <input type="email" id="user_email" placeholder="name@example.com" class="w-full p-3 rounded bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none" required>
+            </div>
+            <div>
+                <label class="block text-sm mb-1">نوع التلخيص</label>
+                <select id="service_type" class="w-full p-3 rounded bg-gray-800 border border-gray-700 outline-none">
+                    <option value="short_reel">30-60 ثانية (TikTok/Reel)</option>
+                    <option value="medium_video">3-5 دقائق (ملخص عميق)</option>
+                    <option value="full_pack">الباقة الكاملة (Cross-Platform)</option>
+                </select>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 transition p-3 rounded-lg font-bold">ابدأ التجربة (Test)</button>
+        </form>
+        <div id="status" class="mt-4 text-center text-sm hidden"></div>
     </div>
 
-    <script type="module">
-        import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
-        
-        const chat = createChat({
-            webhookUrl: 'https://uncorrectable-jeane-ungrudged.ngrok-free.dev/webhook/chat', 
-            title: 'L STORE Support 🤖',
-            welcomeMessage: 'مرحباً بك! راني هنا باش نسجلك الطلبية تاعك.',
-            showWelcomeScreen: false,
-        });
+    <script>
+        const webhookUrl = 'حط_هنا_URL_الـ_Webhook_من_n8n'; 
 
-        // الوظيفة اللي تبعت الميساج للـ AI
-        window.buyNow = () => {
-            chat.toggle(); // يفتح الشات
-            setTimeout(() => {
-                chat.sendMessage("ORDER_START: حذاء نسائي رياضي");
-            }, 500);
+        document.getElementById('viralForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const status = document.getElementById('status');
+            status.innerText = "جاري الإرسال... انتظر ثواني ⏳";
+            status.classList.remove('hidden');
+
+            const data = {
+                url: document.getElementById('yt_url').value,
+                email: document.getElementById('user_email').value,
+                type: document.getElementById('service_type').value
+            };
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if(response.ok) status.innerText = "تم الإرسال بنجاح! تفقد إيميلك بعد قليل ✅";
+                else status.innerText = "حدث خطأ، تأكد من إعدادات n8n ❌";
+            } catch (error) {
+                status.innerText = "خطأ في الاتصال بالسيرفر ❌";
+            }
         };
     </script>
 </body>
