@@ -1,49 +1,72 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ViralNode - تحويل الفيديوهات بذكاء</title>
+    <title>ViralNode | AI Content Automation</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        body { 
+            background: #050a15; 
+            color: #ffffff; 
+            font-family: 'Inter', sans-serif; 
+        }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(15px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+        }
+        input, select {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            transition: all 0.3s ease;
+        }
+        input:focus { border-color: #3b82f6 !important; box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
-    <div class="glass p-8 rounded-2xl shadow-2xl w-full max-auto max-w-md">
-        <h1 class="text-3xl font-bold text-center mb-6 text-blue-400">ViralNode 🚀</h1>
-        <p class="text-gray-400 text-center mb-8">حط رابط اليوتيوب وخلّي الذكاء الاصطناعي يخدم خدمته.</p>
+<body class="flex items-center justify-center min-h-screen p-6">
+    <div class="glass-card p-10 rounded-3xl shadow-2xl w-full max-w-lg border border-white/10">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                ViralNode 🚀
+            </h1>
+            <p class="text-gray-400 font-medium">Transform Long Videos into Viral Gems</p>
+        </div>
         
-        <form id="viralForm" class="space-y-4">
+        <form id="viralForm" class="space-y-6">
             <div>
-                <label class="block text-sm mb-1">رابط YouTube</label>
-                <input type="url" id="yt_url" placeholder="https://youtube.com/..." class="w-full p-3 rounded bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none" required>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">YouTube URL</label>
+                <input type="url" id="yt_url" placeholder="https://youtube.com/watch?v=..." class="w-full p-4 rounded-xl outline-none text-white" required>
             </div>
             <div>
-                <label class="block text-sm mb-1">البريد الإلكتروني</label>
-                <input type="email" id="user_email" placeholder="name@example.com" class="w-full p-3 rounded bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none" required>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Email Address</label>
+                <input type="email" id="user_email" placeholder="client@example.com" class="w-full p-4 rounded-xl outline-none text-white" required>
             </div>
             <div>
-                <label class="block text-sm mb-1">نوع التلخيص</label>
-                <select id="service_type" class="w-full p-3 rounded bg-gray-800 border border-gray-700 outline-none">
-                    <option value="short_reel">30-60 ثانية (TikTok/Reel)</option>
-                    <option value="medium_video">3-5 دقائق (ملخص عميق)</option>
-                    <option value="full_pack">الباقة الكاملة (Cross-Platform)</option>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Service Type</label>
+                <select id="service_type" class="w-full p-4 rounded-xl outline-none text-white appearance-none cursor-pointer">
+                    <option value="short_reel">Viral Shorts/Reels (30-60s)</option>
+                    <option value="medium_video">Deep Summary (3-5 min)</option>
+                    <option value="full_pack">Elite Cross-Platform Bundle</option>
                 </select>
             </div>
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 transition p-3 rounded-lg font-bold">ابدأ التجربة (Test)</button>
+            
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-900/20">
+                Generate Viral Content
+            </button>
         </form>
-        <div id="status" class="mt-4 text-center text-sm hidden"></div>
+        
+        <div id="status" class="mt-6 text-center text-sm font-medium hidden"></div>
     </div>
 
     <script>
-        const webhookUrl = 'حط_هنا_URL_الـ_Webhook_من_n8n'; 
+        const webhookUrl = 'YOUR_N8N_WEBHOOK_URL_HERE'; 
 
         document.getElementById('viralForm').onsubmit = async (e) => {
             e.preventDefault();
             const status = document.getElementById('status');
-            status.innerText = "جاري الإرسال... انتظر ثواني ⏳";
+            status.innerHTML = '<span class="text-blue-400 animate-pulse">Processing your request... ⚙️</span>';
             status.classList.remove('hidden');
 
             const data = {
@@ -58,10 +81,13 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-                if(response.ok) status.innerText = "تم الإرسال بنجاح! تفقد إيميلك بعد قليل ✅";
-                else status.innerText = "حدث خطأ، تأكد من إعدادات n8n ❌";
+                if(response.ok) {
+                    status.innerHTML = '<span class="text-green-400">Success! Check your email in a few minutes. ✅</span>';
+                } else {
+                    status.innerHTML = '<span class="text-red-400">Error: n8n connection failed. ❌</span>';
+                }
             } catch (error) {
-                status.innerText = "خطأ في الاتصال بالسيرفر ❌";
+                status.innerHTML = '<span class="text-red-400">Connection Error. Is your Ubuntu server live? ❌</span>';
             }
         };
     </script>
