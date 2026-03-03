@@ -1,95 +1,82 @@
-<!DOCTYPE html>
-<html lang="en">
+<!<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ViralNode | AI Content Automation</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>متجر الأحذية الرياضية</title>
     <style>
-        body { 
-            background: #050a15; 
-            color: #ffffff; 
-            font-family: 'Inter', sans-serif; 
-        }
-        .glass-card { 
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(15px); 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-        }
-        input, select {
-            background: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            transition: all 0.3s ease;
-        }
-        input:focus { border-color: #3b82f6 !important; box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; text-align: center; }
+        .container { background: white; max-width: 500px; margin: auto; padding: 20px; border-radius: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        img { width: 100%; border-radius: 10px; }
+        h2 { color: #333; }
+        .price { font-size: 24px; color: #e44d26; font-weight: bold; margin: 10px 0; }
+        input, select { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; }
+        button:hover { background-color: #218838; }
+        #loading { display: none; color: blue; margin-top: 10px; }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-6">
-    <div class="glass-card p-10 rounded-3xl shadow-2xl w-full max-w-lg border border-white/10">
-        <div class="text-center mb-10">
-            <h1 class="text-4xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                ViralNode 🚀
-            </h1>
-            <p class="text-gray-400 font-medium">Transform Long Videos into Viral Gems</p>
-        </div>
+<body>
+
+<div class="container">
+    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="حذاء رياضي">
+    <h2>حذاء رياضي Air Max - أصلي</h2>
+    <p class="price">8500 د.ج</p>
+    <p>توصيل سريع لجميع الولايات</p>
+
+    <hr>
+
+    <h3>إملأ البيانات لإتمام الطلب</h3>
+    <form id="orderForm">
+        <input type="text" name="name" placeholder="الاسم" required>
+        <input type="text" name="surname" placeholder="اللقب" required>
+        <input type="text" name="address" placeholder="العنوان (الولاية والبلدية)" required>
+        <input type="text" name="product" value="حذاء Air Max - 1 زوج" readonly>
         
-        <form id="viralForm" class="space-y-6">
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">YouTube URL</label>
-                <input type="url" id="yt_url" placeholder="https://youtube.com/watch?v=..." class="w-full p-4 rounded-xl outline-none text-white" required>
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Email Address</label>
-                <input type="email" id="user_email" placeholder="client@example.com" class="w-full p-4 rounded-xl outline-none text-white" required>
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Service Type</label>
-                <select id="service_type" class="w-full p-4 rounded-xl outline-none text-white appearance-none cursor-pointer">
-                    <option value="short_reel">Viral Shorts/Reels (30-60s)</option>
-                    <option value="medium_video">Deep Summary (3-5 min)</option>
-                    <option value="full_pack">Elite Cross-Platform Bundle</option>
-                </select>
-            </div>
-            
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-900/20">
-                Generate Viral Content
-            </button>
-        </form>
-        
-        <div id="status" class="mt-6 text-center text-sm font-medium hidden"></div>
-    </div>
+        <select name="color" required>
+            <option value="">اختر اللون</option>
+            <option value="أحمر">أحمر</option>
+            <option value="أسود">أسود</option>
+            <option value="أزرق">أزرق</option>
+        </select>
 
-    <script>
-        const webhookUrl = 'https://uncorrectable-jeane-ungrudged.ngrok-free.dev/webhook/viral'; 
+        <select name="transport" required>
+            <option value="">وسيلة النقل</option>
+            <option value="Yalidine">Yalidine (توصيل للمنزل)</option>
+            <option value="StopDesk">StopDesk (توصيل للمكتب)</option>
+        </select>
 
-        document.getElementById('viralForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const status = document.getElementById('status');
-            status.innerHTML = '<span class="text-blue-400 animate-pulse">Processing your request... ⚙️</span>';
-            status.classList.remove('hidden');
+        <button type="submit" id="submitBtn">تأكيد الطلبية</button>
+    </form>
+    <div id="loading">جاري إرسال طلبك... استنى شوية</div>
+</div>
 
-            const data = {
-                url: document.getElementById('yt_url').value,
-                email: document.getElementById('user_email').value,
-                type: document.getElementById('service_type').value
-            };
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyimSIeKRNzQAlEAC2P0Jl229MGJB4BBT4M166c-oDBJ1QAfsJCSa6MX0YCBUvmGe8/exec'
+    const form = document.getElementById('orderForm')
+    const btn = document.getElementById('submitBtn')
+    const loading = document.getElementById('loading')
 
-            try {
-                const response = await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                if(response.ok) {
-                    status.innerHTML = '<span class="text-green-400">Success! Check your email in a few minutes. ✅</span>';
-                } else {
-                    status.innerHTML = '<span class="text-red-400">Error: n8n connection failed. ❌</span>';
-                }
-            } catch (error) {
-                status.innerHTML = '<span class="text-red-400">Connection Error. Is your Ubuntu server live? ❌</span>';
-            }
-        };
-    </script>
+    form.addEventListener('submit', e => {
+        e.preventDefault()
+        btn.disabled = true
+        loading.style.display = 'block'
+
+        fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+            .then(response => {
+                loading.style.display = 'none'
+                btn.disabled = false
+                alert("صحة خويا! الطلبية وصلتني، دروك نعيطولك في التيليفون.")
+                form.reset()
+            })
+            .catch(error => {
+                loading.style.display = 'none'
+                btn.disabled = false
+                console.error('Error!', error.message)
+                alert("صرى مشكل صغير، عاود سيي!")
+            })
+    })
+</script>
+
 </body>
 </html>
