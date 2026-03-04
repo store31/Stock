@@ -49,34 +49,35 @@
     <p id="loadingMsg" style="display:none; color: #007bff; font-weight: bold; margin-top: 15px;">⏳ جاري المعالجة... انتظر ثانية</p>
 </div>
 
+    
 <script>
-    // الرابط اللي عطيتهولي أنت دروك (BN1/exec)
+    // الرابط الصحيح اللي جبته دروك (تأكد بلي يبدأ بـ https ويخلص بـ exec)
     const scriptURL = 'https://script.google.com/macros/s/AKfycby7-nfZ36-hMfmizXgWcz_ISfO7xRHYgD1DQRjUdFvyvGFvhzanYWuTNrzeqsE5aBN1/exec'
     const form = document.getElementById('orderForm')
     const btn = document.getElementById('submitBtn')
-    const loading = document.getElementById('loadingMsg')
 
     form.addEventListener('submit', e => {
         e.preventDefault()
         btn.disabled = true
-        loading.style.display = 'block'
+        btn.innerText = "جاري الإرسال..."
 
-        // إرسال البيانات
+        // إرسال البيانات لـ Google Sheets وتلغرام
         fetch(scriptURL, { method: 'POST', body: new FormData(form)})
             .then(response => {
-                loading.style.display = 'none'
-                btn.disabled = false
-                alert("صحة خويا! الطلبية تسجلت وراها وصلت لتلغرام.")
+                alert("صحة خويا! الطلبية تسجلت ووصلت لتلغرام.")
                 form.reset()
+                btn.disabled = false
+                btn.innerText = "تأكيد الطلب"
             })
             .catch(error => {
-                loading.style.display = 'none'
-                btn.disabled = false
                 console.error('Error!', error.message)
-                alert("كاين مشكل في الإرسال، عاود سيي!")
+                alert("كاين مشكل صغير، عاود جرب!")
+                btn.disabled = false
+                btn.innerText = "تأكيد الطلب"
             })
     })
 </script>
+
 
 </body>
 </html>
