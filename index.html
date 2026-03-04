@@ -5,69 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تأكيد الطلبية</title>
     <style>
-        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; text-align: center; }
-        .container { background: white; max-width: 400px; margin: auto; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; }
-        label { display: block; text-align: right; font-weight: bold; }
+        body { font-family: sans-serif; background: #f8f9fa; padding: 20px; text-align: center; direction: rtl; }
+        .container { background: white; max-width: 420px; margin: auto; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold; }
+        label { display: block; text-align: right; font-weight: bold; margin-top: 10px; color: #555; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>تأكيد طلبية الحذاء</h2>
+    <h2 style="margin-bottom: 20px;">استمارة طلب المنتج</h2>
     <form id="orderForm">
         <label>الاسم واللقب:</label>
-        <input type="text" name="name" placeholder="الاسم" required style="width:48%">
-        <input type="text" name="surname" placeholder="اللقب" required style="width:48%">
+        <div style="display: flex; gap: 10px;">
+            <input type="text" name="name" placeholder="الاسم" required>
+            <input type="text" name="surname" placeholder="اللقب" required>
+        </div>
 
         <label>رقم الهاتف:</label>
         <input type="tel" name="phone" placeholder="06XXXXXXXX" required>
 
-        <label>العنوان:</label>
-        <input type="text" name="address" placeholder="الولاية والبلدية" required>
+        <label>العنوان الكامل:</label>
+        <input type="text" name="address" placeholder="الولاية، البلدية، الحي" required>
 
-        <input type="hidden" name="product" value="Nike Air Max">
-
-        <label>اللون:</label>
-        <select name="color">
+        <label>اللون المطلوب:</label>
+        <select name="color" required>
             <option value="أسود">أسود</option>
             <option value="أحمر">أحمر</option>
+            <option value="أبيض">أبيض</option>
         </select>
 
-        <label>التوصيل:</label>
-        <select name="transport">
+        <label>وسيلة النقل:</label>
+        <select name="transport" required>
             <option value="Yalidine">Yalidine</option>
             <option value="StopDesk">StopDesk</option>
         </select>
 
-        <button type="submit" id="submitBtn">تأكيد الطلب</button>
+        <input type="hidden" name="product" value="Nike Air Max">
+
+        <button type="submit" id="submitBtn">إرسال الطلب الآن</button>
     </form>
+    <p id="loadingMsg" style="display:none; color: #007bff; font-weight: bold; margin-top: 15px;">⏳ جاري المعالجة... انتظر ثانية</p>
 </div>
 
 <script>
-    // الرابط الجديد اللي عطيتهولي دروك (تأكد باللي راه كامل)
+    // الرابط اللي عطيتهولي أنت دروك (BN1/exec)
     const scriptURL = 'https://script.google.com/macros/s/AKfycby7-nfZ36-hMfmizXgWcz_ISfO7xRHYgD1DQRjUdFvyvGFvhzanYWuTNrzeqsE5aBN1/exec'
-
     const form = document.getElementById('orderForm')
+    const btn = document.getElementById('submitBtn')
+    const loading = document.getElementById('loadingMsg')
 
     form.addEventListener('submit', e => {
         e.preventDefault()
-        document.getElementById('submitBtn').disabled = true
-        document.getElementById('submitBtn').innerText = "جاري الإرسال..."
+        btn.disabled = true
+        loading.style.display = 'block'
 
+        // إرسال البيانات
         fetch(scriptURL, { method: 'POST', body: new FormData(form)})
             .then(response => {
-                alert("صحة خويا! الطلبية وصلت لتلغرام وللشيت.")
+                loading.style.display = 'none'
+                btn.disabled = false
+                alert("صحة خويا! الطلبية تسجلت وراها وصلت لتلغرام.")
                 form.reset()
-                document.getElementById('submitBtn').disabled = false
-                document.getElementById('submitBtn').innerText = "تأكيد الطلب"
             })
             .catch(error => {
+                loading.style.display = 'none'
+                btn.disabled = false
                 console.error('Error!', error.message)
-                alert("كاين مشكل صغير، تأكد من اتصال الإنترنت!")
-                document.getElementById('submitBtn').disabled = false
-                document.getElementById('submitBtn').innerText = "تأكيد الطلب"
+                alert("كاين مشكل في الإرسال، عاود سيي!")
             })
     })
 </script>
