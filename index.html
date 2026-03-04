@@ -1,58 +1,73 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر الأحذية الرياضية</title>
+    <title>تأكيد الطلب - متجر الأحذية</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; text-align: center; }
-        .container { background: white; max-width: 500px; margin: auto; padding: 20px; border-radius: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        img { width: 100%; border-radius: 10px; }
-        h2 { color: #333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; margin: 0; padding: 15px; text-align: center; color: #333; }
+        .container { background: white; max-width: 450px; margin: auto; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        img { width: 100%; border-radius: 10px; margin-bottom: 15px; }
+        h2 { color: #222; margin-bottom: 5px; }
         .price { font-size: 24px; color: #e44d26; font-weight: bold; margin: 10px 0; }
-        input, select { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-        button { width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; }
+        form { text-align: right; margin-top: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; color: #555; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; background-color: #fff; }
+        input:focus, select:focus { border-color: #007bff; outline: none; box-shadow: 0 0 5px rgba(0,123,255,0.2); }
+        button { width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; }
         button:hover { background-color: #218838; }
-        #loading { display: none; color: blue; margin-top: 10px; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        #loading { display: none; color: #007bff; font-weight: bold; margin-top: 10px; }
+        .footer-note { font-size: 12px; color: #888; margin-top: 15px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="حذاء رياضي">
-    <h2>حذاء رياضي Air Max - أصلي</h2>
-    <p class="price">8500 د.ج</p>
-    <p>توصيل سريع لجميع الولايات</p>
-
-    <hr>
-
-    <h3>إملأ البيانات لإتمام الطلب</h3>
+    <h2>حذاء Nike Air Max الأصلي</h2>
+    <p class="price">8,500 د.ج</p>
+    
     <form id="orderForm">
-        <input type="text" name="name" placeholder="الاسم" required>
-        <input type="text" name="surname" placeholder="اللقب" required>
-        <input type="text" name="address" placeholder="العنوان (الولاية والبلدية)" required>
-        <input type="text" name="product" value="حذاء Air Max - 1 زوج" readonly>
-        
+        <label>الاسم:</label>
+        <input type="text" name="name" placeholder="إسمك الكريم" required>
+
+        <label>اللقب:</label>
+        <input type="text" name="surname" placeholder="لقبك" required>
+
+        <label>رقم الهاتف (للاتصال بك وتأكيد الطلب):</label>
+        <input type="tel" name="phone" placeholder="06XXXXXXXX" pattern="[0-9]{10}" title="يرجى إدخال 10 أرقام" required>
+
+        <label>العنوان الكامل (الولاية والبلدية):</label>
+        <input type="text" name="address" placeholder="مثال: وهران، بئر الجير، حي الياسمين" required>
+
+        <input type="hidden" name="product" value="Nike Air Max">
+
+        <label>اللون:</label>
         <select name="color" required>
-            <option value="">اختر اللون</option>
-            <option value="أحمر">أحمر</option>
+            <option value="">-- اختر اللون --</option>
             <option value="أسود">أسود</option>
-            <option value="أزرق">أزرق</option>
+            <option value="أحمر">أحمر</option>
+            <option value="أبيض">أبيض</option>
         </select>
 
+        <label>طريقة التوصيل المفضلة:</label>
         <select name="transport" required>
-            <option value="">وسيلة النقل</option>
+            <option value="">-- اختر وسيلة النقل --</option>
             <option value="Yalidine">Yalidine (توصيل للمنزل)</option>
-            <option value="StopDesk">StopDesk (توصيل للمكتب)</option>
+            <option value="StopDesk">StopDesk (استلام من المكتب)</option>
         </select>
 
-        <button type="submit" id="submitBtn">تأكيد الطلبية</button>
+        <button type="submit" id="submitBtn">تأكيد الطلبية الآن</button>
     </form>
-    <div id="loading">جاري إرسال طلبك... استنى شوية</div>
+    
+    <div id="loading">⏳ جاري إرسال طلبك... يرجى الانتظار</div>
+    <p class="footer-note">بعد الضغط على تأكيد، سنتصل بك هاتفياً لتأكيد العنوان وموعد التسليم.</p>
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyimSIeKRNzQAlEAC2P0Jl229MGJB4BBT4M166c-oDBJ1QAfsJCSa6MX0YCBUvmGe8/exec'
+    // الرابط الجديد تاعك
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyDrWLTPNpOOAKAFB7m2XXSfjOknRjPVPHdI5CTz5b4E6Y6SnlRX-QtssiZU9MxEKP_/exec'
     const form = document.getElementById('orderForm')
     const btn = document.getElementById('submitBtn')
     const loading = document.getElementById('loading')
@@ -66,14 +81,14 @@
             .then(response => {
                 loading.style.display = 'none'
                 btn.disabled = false
-                alert("صحة خويا! الطلبية وصلتني، دروك نعيطولك في التيليفون.")
+                alert("تم استلام طلبك بنجاح! شكراً لك، سنتصل بك قريباً على رقمك.")
                 form.reset()
             })
             .catch(error => {
                 loading.style.display = 'none'
                 btn.disabled = false
                 console.error('Error!', error.message)
-                alert("صرى مشكل صغير، عاود سيي!")
+                alert("حدث خطأ، يرجى التحقق من اتصال الإنترنت والمحاولة مجدداً.")
             })
     })
 </script>
