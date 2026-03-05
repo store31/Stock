@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>لوحة الطلبات</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+padding:20px;
+}
+
+h2{
+text-align:center;
+}
+
+input{
+padding:10px;
+margin-bottom:15px;
+width:100%;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th,td{
+padding:10px;
+border:1px solid #ddd;
+text-align:center;
+}
+
+th{
+background:#333;
+color:white;
+}
+
+.new{background:#ffeaa7}
+.confirm{background:#74b9ff}
+.ship{background:#a29bfe}
+.done{background:#55efc4}
+.cancel{background:#ff7675}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>لوحة إدارة الطلبات</h2>
+
+<input type="text" id="search" placeholder="بحث برقم الهاتف">
+
+<table id="orders">
+
+<thead>
+
+<tr>
+<th>ID</th>
+<th>التاريخ</th>
+<th>الاسم</th>
+<th>الهاتف</th>
+<th>المنتج</th>
+<th>اللون</th>
+<th>الحالة</th>
+</tr>
+
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+<script>
+
+const API="PUT_SCRIPT_URL";
+
+fetch(API)
+.then(res=>res.json())
+.then(data=>{
+
+let rows="";
+
+data.forEach(o=>{
+
+rows+=`
+<tr>
+<td>${o.id}</td>
+<td>${o.date}</td>
+<td>${o.name}</td>
+<td>${o.phone}</td>
+<td>${o.product}</td>
+<td>${o.color}</td>
+<td>${o.status}</td>
+</tr>
+`;
+
+});
+
+document.querySelector("#orders tbody").innerHTML=rows;
+
+});
+
+document.getElementById("search").addEventListener("keyup",function(){
+
+var value=this.value.toLowerCase();
+
+document.querySelectorAll("#orders tbody tr").forEach(row=>{
+
+row.style.display=row.innerText.toLowerCase().includes(value)?"":"none";
+
+});
+
+});
+
+</script>
+
+</body>
+</html>
