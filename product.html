@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Nike Air Max</title>
+
+<style>
+
+body{
+font-family:sans-serif;
+background:#f4f4f4;
+margin:0;
+padding:0;
+}
+
+.container{
+max-width:500px;
+margin:auto;
+background:white;
+padding:20px;
+}
+
+img{
+width:100%;
+border-radius:10px;
+}
+
+h1{
+text-align:center;
+}
+
+.price{
+font-size:22px;
+color:#e74c3c;
+text-align:center;
+margin:10px 0;
+}
+
+input,select{
+
+width:100%;
+padding:12px;
+margin-top:10px;
+border:1px solid #ddd;
+border-radius:6px;
+font-size:16px;
+
+}
+
+button{
+
+width:100%;
+padding:15px;
+background:#27ae60;
+color:white;
+border:none;
+border-radius:6px;
+font-size:18px;
+margin-top:15px;
+cursor:pointer;
+
+}
+
+button:hover{
+background:#219150;
+}
+
+.success{
+
+display:none;
+text-align:center;
+color:green;
+font-size:18px;
+margin-top:20px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff">
+
+<h1>Nike Air Max</h1>
+
+<div class="price">4500 DA</div>
+
+<form id="orderForm">
+
+<input type="text" name="name" placeholder="الاسم" required>
+
+<input type="text" name="surname" placeholder="اللقب" required>
+
+<input type="tel" name="phone" placeholder="رقم الهاتف" required>
+
+<input type="text" name="address" placeholder="الولاية، البلدية، الحي" required>
+
+<select name="color">
+
+<option>أسود</option>
+<option>أبيض</option>
+<option>أحمر</option>
+
+</select>
+
+<select name="transport">
+
+<option>Yalidine</option>
+<option>StopDesk</option>
+
+</select>
+
+<input type="hidden" name="product" value="Nike Air Max">
+
+<button type="submit">اطلب الآن</button>
+
+</form>
+
+<div class="success" id="success">
+
+✔ تم تسجيل طلبك بنجاح  
+سوف نتصل بك لتأكيد الطلب
+
+</div>
+
+</div>
+
+<script>
+
+const scriptURL="PUT_YOUR_SCRIPT_URL"
+
+const form=document.getElementById("orderForm")
+
+form.addEventListener("submit",e=>{
+
+e.preventDefault()
+
+fetch(scriptURL,{
+method:"POST",
+body:new FormData(form)
+})
+.then(res=>{
+
+document.getElementById("success").style.display="block"
+
+form.reset()
+
+})
+.catch(err=>alert("حدث خطأ حاول مرة أخرى"))
+
+})
+
+</script>
+
+</body>
+
+</html>
