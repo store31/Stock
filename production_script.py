@@ -3,71 +3,74 @@ import subprocess
 import requests
 import time
 
-# 🔑 Secrets
 PEXELS_KEY = os.getenv("PEXELS_KEY")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
 def run(cmd):
-    print(f"▶ {cmd}")
     subprocess.run(cmd, shell=True, check=True)
 
+def get_video_links():
+    # كلمات بحث مختلفة باش نجمعو أكبر عدد ممكن
+    queries = ["magic cat", "fantasy forest", "mystical cloud", "cute kitten adventure", "fairy tale world"]
+    all_links = []
+    headers = {"Authorization": PEXELS_KEY}
+    
+    for q in queries:
+        try:
+            url = f"https://api.pexels.com/videos/search?query={q}&per_page=5"
+            r = requests.get(url, headers=headers).json()
+            if "videos" in r:
+                links = [v['video_files'][0]['link'] for v in r['videos']]
+                all_links.extend(links)
+                print(f"✅ Found {len(links)} videos for: {q}")
+        except:
+            continue
+    return all_links
+
 def produce_masterpiece():
-    # 1. القصة السحرية (Gemini's Masterpiece)
+    # 1. القصة (Gemini Masterpiece)
     script = (
-        "Once upon a time, in a village where the houses were made of giant pumpkins, lived a fluffy ginger cat named Simba. "
-        "Simba wasn’t an ordinary cat; he wore a tiny blue scarf and had a tail that glowed whenever he felt excited. "
-        "One sunny morning, Simba noticed something very strange. The Great Rainbow Cloud, which gave the village its beautiful colors, had vanished! "
-        "Simba headed towards the Whispering Mountains. He met a tiny blue bird named Pip. Pip was crying silver tears because the cloud was stuck in the Cave of Silence. "
-        "Simba began to purr the loudest, happiest purr ever. His tail began to glow, turning the dark cave into golden light. "
-        "The Rainbow Cloud was free! It floated up, bursting with pink, green, and gold colors. "
-        "The villagers cheered, Simba realized that a happy heart can light up the darkest cave. The village stayed colorful forever. The end."
+        "In a magical village of pumpkins, lived Simba the cat with a glowing tail. "
+        "One day, the Rainbow Cloud disappeared, leaving the world grey. "
+        "Simba met Pip the bird, and together they reached the Cave of Silence. "
+        "With a happy purr and a bright glow, Simba broke the shadows and freed the cloud. "
+        "Color returned to the world, and they lived happily ever after. The end."
     )
     
-    # توليد الصوت (حوالي 3 دقائق)
     run(f'edge-tts --text "{script}" --write-media voice.mp3')
 
-    # 2. جلب 25 فيديو متنوع (لضمان 3 دقائق)
-    headers = {"Authorization": PEXELS_KEY}
-    url = "https://api.pexels.com/videos/search?query=magic+forest+cat+adventure&per_page=25"
-    data = requests.get(url, headers=headers).json()
-    links = [v['video_files'][0]['link'] for v in data.get("videos", [])]
+    # 2. جمع الفيديوهات (Multi-Query Strategy)
+    links = get_video_links()
+    
+    if not links:
+        print("❌ No videos found at all!")
+        return
 
-    # 3. معالجة المقاطع (نحتاج 22 مقطع كل واحد 8.5 ثانية)
+    # 3. معالجة المقاطع (نحتاج حوالي 15-20 مقطع لـ 3 دقائق)
     processed = []
-    for i, link in enumerate(links[:22]):
+    # نكرر القائمة إذا كانت قصيرة باش نوصلو لـ 3 دقائق
+    final_links = (links * 5)[:20] 
+
+    for i, link in enumerate(final_links):
         out = f"v{i}.mp4"
-        # توحيد المقاسات والسرعة
-        run(f"ffmpeg -y -i \"{link}\" -vf scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=25 -t 8.5 -preset ultrafast {out}")
+        # كل مقطع 9 ثواني × 20 مقطع = 180 ثانية (3 دقائق)
+        run(f"ffmpeg -y -i \"{link}\" -vf scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=25 -t 9 -preset ultrafast {out}")
         processed.append(out)
 
-    # 4. دمج المقاطع
+    # 4. الدمج النهائي
     with open("list.txt", "w") as f:
         for p in processed: f.write(f"file '{os.path.abspath(p)}'\n")
+    
     run("ffmpeg -y -f concat -safe 0 -i list.txt -c copy merged.mp4")
+    
+    final_output = "simba_3min_story.mp4"
+    run(f"ffmpeg -y -i merged.mp4 -i voice.mp3 -c:v libx264 -preset ultrafast -crf 28 -shortest {final_output}")
 
-    # 5. حرق نصوص القصة (كتابة عالمية)
-    final_output = "simba_adventure.mp4"
-    draw_text = (
-        "drawtext=text='SIMBA: THE MAGIC CAT':fontcolor=white:fontsize=80:box=1:boxcolor=black@0.6:x=(w-text_w)/2:y=(h-text_h)/3:enable='between(t,0,10)',"
-        "drawtext=text='THE CLOUD HAS VANISHED':fontcolor=yellow:fontsize=60:box=1:boxcolor=black@0.4:x=(w-text_w)/2:y=h-450:enable='between(t,10,60)',"
-        "drawtext=text='THE CAVE OF SILENCE':fontcolor=white:fontsize=60:box=1:boxcolor=black@0.4:x=(w-text_w)/2:y=h-450:enable='between(t,60,120)',"
-        "drawtext=text='HAPPINESS IS THE KEY':fontcolor=yellow:fontsize=60:box=1:boxcolor=black@0.6:x=(w-text_w)/2:y=h-450:enable='between(t,120,180)'"
-    )
-
-    cmd = (
-        f"ffmpeg -y -i merged.mp4 -i voice.mp3 "
-        f"-vf \"{draw_text}\" "
-        f"-c:v libx264 -preset ultrafast -crf 28 -c:a aac -shortest {final_output}"
-    )
-    run(cmd)
-
-    # 6. الإرسال لتلغرام
-    time.sleep(2)
+    # 5. الإرسال
     with open(final_output, "rb") as v:
         requests.post(f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendVideo",
-                      data={"chat_id": CHAT_ID, "caption": "🐱 *3-Minute Global Story Ready!*"}, files={"video": v})
-    print("✅ DONE")
+                      data={"chat_id": CHAT_ID, "caption": "🐱 *Simba Story (3 Minutes) is Live!*"}, files={"video": v})
 
 if __name__ == "__main__":
     produce_masterpiece()
