@@ -2,63 +2,54 @@ import os
 import subprocess
 import requests
 
-# الإعدادات
 PEXELS_KEY = os.getenv("PEXELS_KEY")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
-def produce_final_pro():
-    temp_dir = "pro_work"
+def produce_world_class():
+    temp_dir = "final_touch"
     os.makedirs(temp_dir, exist_ok=True)
     
-    # 1. سكريبت طويل ومقسم
-    script = "The future of neural intelligence is here. We dive deep into complex systems. Innovation is our new reality. Subscribe for more updates."
-    
-    # 2. الصوت (Edge-TTS)
-    audio_path = f"{temp_dir}/audio.mp3"
+    # 1. الصوت
+    script = "The future is here. Neural networks are changing everything. Subscribe to stay updated."
+    audio_path = f"{temp_dir}/voice.mp3"
     subprocess.run(f'edge-tts --text "{script}" --write-media {audio_path}', shell=True)
 
-    # 3. جلب فيديوهات (4 فيديوهات لضمان الطول)
+    # 2. جلب وتجهيز فيديوهات (نضمنو 4 مقاطع)
     headers = {"Authorization": PEXELS_KEY}
     url = "https://api.pexels.com/videos/search?query=technology&per_page=4"
     res = requests.get(url, headers=headers).json()
     v_links = [v['video_files'][0]['link'] for v in res.get('videos', [])]
 
-    # معالجة الفيديوهات (توحيد المقاسات والـ FPS أهم حاجة للدمج)
     processed = []
     for i, link in enumerate(v_links):
-        output = f"{temp_dir}/v{i}.mp4"
-        # توحيد كل المقاطع لـ 1080x1920 وبـ 30 إطار في الثانية
-        cmd = f"ffmpeg -y -i {link} -vf 'scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setdar=9/16,fps=30' -t 15 {output}"
-        subprocess.run(cmd, shell=True)
+        output = f"{temp_dir}/p{i}.mp4"
+        # توحيد المقاسات والـ FPS أهم خطوة للدمج
+        subprocess.run(f"ffmpeg -y -i {link} -vf 'scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=30' -t 15 {output}", shell=True)
         processed.append(output)
 
-    # 4. دمج المقاطع "حبة بحبة" (Concat Filter)
-    # هادي الطريقة تضمن أنهم يلصقو بلا مشاكل
+    # 3. الدمج الصافي
     inputs = "".join([f"-i {f} " for f in processed])
-    filter_complex = "".join([f"[{i}:v]" for i in range(len(processed))]) + f"concat=n={len(processed)}:v=1:a=0[v]"
-    subprocess.run(f"ffmpeg -y {inputs} -filter_complex '{filter_complex}' -map '[v]' {temp_dir}/merged.mp4", shell=True)
+    filter_concat = "".join([f"[{i}:v]" for i in range(len(processed))]) + f"concat=n={len(processed)}:v=1:a=0[v]"
+    subprocess.run(f"ffmpeg -y {inputs} -filter_complex '{filter_concat}' -map '[v]' {temp_dir}/merged.mp4", shell=True)
 
-    # 5. ملف الترجمة (Subtitle) - يظهر تحت بذكاء
-    srt_path = f"{temp_dir}/subs.srt"
-    with open(srt_path, "w") as f:
-        f.write("1\n00:00:00,500 --> 00:00:10,000\nTHE FUTURE IS NOW\n\n2\n00:00:10,500 --> 00:00:40,000\nEXPLORING NEURAL NETS")
+    # 4. المونتاج النهائي: العنوان يختفي + نصوص متغيرة (بدل Subtitles)
+    # العنوان يظهر (0-5ث) | النص الأول (5-15ث) | النص الثاني (15-30ث)
+    final_output = "pro_video_fixed.mp4"
+    draw_title = "drawtext=text='NEURAL GENESIS':fontcolor=white:fontsize=60:x=(w-text_w)/2:y=(h-text_h)/4:enable='between(t,0,5)':box=1:boxcolor=black@0.5"
+    draw_txt1 = "drawtext=text='THE FUTURE IS NOW':fontcolor=yellow:fontsize=45:x=(w-text_w)/2:y=h-300:enable='between(t,5,15)':box=1:boxcolor=black@0.7"
+    draw_txt2 = "drawtext=text='SUBSCRIBE FOR TECH SECRETS':fontcolor=white:fontsize=45:x=(w-text_w)/2:y=h-300:enable='between(t,15,60)':box=1:boxcolor=black@0.7"
 
-    # 6. المونتاج النهائي (ترجمة + عنوان في البداية فقط + صوت)
-    final_output = "factory_final.mp4"
-    # العنوان يظهر فقط لأول 5 ثواني (enable='between(t,0,5)')
-    cmd_final = (
+    cmd = (
         f"ffmpeg -y -i {temp_dir}/merged.mp4 -i {audio_path} "
-        f"-vf \"subtitles={srt_path}:force_style='Alignment=2,FontSize=20,PrimaryColour=&HFFFFFF,OutlineColour=&H000000,BorderStyle=3,MarginV=50', "
-        f"drawtext=text='NEURAL NET TECH':fontcolor=white:fontsize=40:x=(w-text_w)/2:y=(h-text_h)/3:enable='between(t,0,5)'\" "
+        f"-vf \"{draw_title}, {draw_txt1}, {draw_txt2}\" "
         f"-c:v libx264 -c:a aac -shortest {final_output}"
     )
-    subprocess.run(cmd_final, shell=True)
+    subprocess.run(cmd, shell=True)
 
-    # إرسال
-    url_tg = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendVideo"
+    # إرسال لتلغرام
     with open(final_output, "rb") as v:
-        requests.post(url_tg, data={"chat_id": CHAT_ID}, files={"video": v})
+        requests.post(f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendVideo", data={"chat_id": CHAT_ID}, files={"video": v})
 
 if __name__ == "__main__":
-    produce_final_pro()
+    produce_world_class()
