@@ -2,23 +2,49 @@ name: Daily Shorts Factory 🚀
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - name: Install dependencies
+
+      - name: Install Dependencies
         run: |
-          pip install edge-tts requests
           sudo apt-get update
           sudo apt-get install -y ffmpeg
+          pip install requests edge-tts
+
       - name: Run Video Factory
         env:
           PEXELS_KEY: ${{ secrets.PEXELS_KEY }}
+        run: python production_script.py
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: vid-${{ github.run_id }}
+          name: "Video Production #${{ github.run_number }}"
+          files: Simba_*.mp4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Send Link to Telegram
+        env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
-        run: python production_script.py
+        run: |
+          RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/vid-${{ github.run_id }}"
+          curl -s -X POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage \
+            -d chat_id=$CHAT_ID \
+            -d parse_mode="Markdown" \
+            -d text="✅ *Video is Ready!*%0A%0A📥 *Download Link (GitHub):*%0A$RELEASE_URL"
