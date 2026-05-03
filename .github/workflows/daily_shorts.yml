@@ -1,6 +1,6 @@
 name: Daily Shorts Factory 🚀
 on:
-  workflow_dispatch: # تشغيل يدويا
+  workflow_dispatch:
 
 jobs:
   build:
