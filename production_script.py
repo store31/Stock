@@ -3,7 +3,7 @@ import subprocess
 import requests
 import time
 
-# 🔑 Secrets
+# 🔑 Secrets (PEXELS_KEY, TELEGRAM_TOKEN, CHAT_ID)
 PEXELS_KEY = os.getenv("PEXELS_KEY")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
@@ -12,58 +12,59 @@ def run(cmd):
     print(f"▶ {cmd}")
     subprocess.run(cmd, shell=True, check=True)
 
-def get_video_links():
-    queries = ["magic forest", "cute cat", "fantasy landscape", "mystical nature"]
-    all_links = []
-    headers = {"Authorization": PEXELS_KEY}
-    for q in queries:
-        try:
-            r = requests.get(f"https://api.pexels.com/videos/search?query={q}&per_page=10", headers=headers).json()
-            all_links.extend([v['video_files'][0]['link'] for v in r.get('videos', [])])
-        except: continue
-    return all_links
-
 def produce_masterpiece():
-    # القصة (لازم تكون طويلة باش تلحق 3 دقائق)
+    # 1. القصة (3 دقائق)
     script = (
-        "Once upon a time, in a magical village of pumpkins, lived Simba the ginger cat. " * 15 
-    ) # راني درت تكرار هنا فقط كمثال، بصح استعمل القصة الطويلة اللي عطيتها لك
+        "Once upon a time, in a magical village of pumpkins, lived Simba the ginger cat. "
+        "His tail glowed with pure magic. One day, the Rainbow Cloud vanished and the world turned grey. "
+        "Simba and Pip the bird traveled to the Cave of Silence. "
+        "Simba purred with joy, his tail lit up the darkness, and the cloud was free! "
+        "Color returned to the world, and happiness stayed forever. The end."
+    )
     
     print("🎙️ Generating Voice...")
     run(f'edge-tts --text "{script}" --write-media voice.mp3')
 
-    links = get_video_links()
-    
-    # 3. معالجة المقاطع (نزيدو في مدة كل مقطع)
+    # 2. جلب الفيديوهات (Multi-Query)
+    queries = ["magic cat", "fantasy forest", "mystical nature"]
+    links = []
+    for q in queries:
+        try:
+            r = requests.get(f"https://api.pexels.com/videos/search?query={q}&per_page=10", 
+                             headers={"Authorization": PEXELS_KEY}).json()
+            links.extend([v['video_files'][0]['link'] for v in r.get('videos', [])])
+        except: continue
+
+    # 3. معالجة 20 مقطع (كل واحد 9 ثواني = 180 ثانية)
     processed = []
-    # نرفدو 20 مقطع، كل واحد نردوه 10 ثواني
-    for i, link in enumerate(links[:20]):
+    for i, link in enumerate((links * 5)[:20]):
         out = f"v{i}.mp4"
-        # استعملت -t 10 باش نضمن الوصول لـ 200 ثانية (أكثر من 3 دقائق)
-        run(f"ffmpeg -y -i \"{link}\" -vf scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=25 -t 10 -preset ultrafast {out}")
+        run(f"ffmpeg -y -i \"{link}\" -vf scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=25 -t 9 -preset ultrafast {out}")
         processed.append(out)
 
-    # 4. الدمج (الطريقة المضمونة)
+    # 4. الدمج
     with open("list.txt", "w") as f:
-        for p in processed: f.write(f"file '{p}'\n")
+        for p in processed: f.write(f"file '{os.path.abspath(p)}'\n")
     run("ffmpeg -y -f concat -safe 0 -i list.txt -c copy merged.mp4")
 
-    # 5. الرندرة النهائية (نحينا -shortest وجربنا دمج مباشر)
-    final_output = "simba_final.mp4"
-    # استعملت -af aresample لضبط الصوت مع الفيديو
-    cmd = (
-        f"ffmpeg -y -i merged.mp4 -i voice.mp3 "
-        f"-map 0:v:0 -map 1:a:0 "
-        f"-c:v libx264 -preset ultrafast -crf 32 "
-        f"-c:a aac -b:a 128k "
-        f"-t 180 {final_output}" 
-    ) # هنا فورصينا الوقت يكون 180 ثانية (3 دقائق)
-    run(cmd)
+    # 5. الرندرة النهائية (جودة عالية)
+    final_output = f"Simba_Adventure_{int(time.time())}.mp4"
+    run(f"ffmpeg -y -i merged.mp4 -i voice.mp3 -map 0:v:0 -map 1:a:0 -c:v libx264 -preset ultrafast -crf 23 -c:a aac -t 180 {final_output}")
 
-    # 6. الإرسال
-    with open(final_output, "rb") as v:
-        requests.post(f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendVideo", 
-                      data={"chat_id": CHAT_ID, "caption": "🐱 *Simba 3-Minute Story!*"}, files={"video": v})
+    # 6. الرفع والحصول على رابط تحميل مباشر
+    print(f"🚀 Uploading to get a direct download link...")
+    upload_cmd = f"curl --upload-file ./{final_output} https://transfer.sh/{final_output}"
+    download_url = subprocess.check_output(upload_cmd, shell=True).decode('utf-8').strip()
+    
+    # 7. إرسال الرابط لتلغرام
+    print(f"📤 Sending link to Telegram...")
+    msg = f"✅ *Video is Ready!*\n\n🐱 *Story:* Simba's Adventure\n⏱ *Duration:* 3 Minutes\n\n📥 *Download Link:*\n{download_url}"
+    
+    tel_url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    payload = {"chat_id": CHAT_ID, "text": msg, "parse_mode": "Markdown"}
+    requests.post(tel_url, json=payload)
+    
+    print(f"🔥 Mission Complete! Check your Telegram.")
 
 if __name__ == "__main__":
     produce_masterpiece()
